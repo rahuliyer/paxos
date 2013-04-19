@@ -1,15 +1,11 @@
-#include "PaxosServiceHandler.h"
 #include "PaxosThriftPeer.h"
-
-#include <thrift/protocol/TBinaryProtocol.h>
-#include <thrift/server/TNonblockingServer.h>
+#include "PaxosThriftServer.h"
 
 #include <vector>
+#include <thread>
+#include <iostream>
 
-using namespace apache::thrift;
-using namespace apache::thrift::protocol;
-using namespace apache::thrift::transport;
-using namespace apache::thrift::server;
+using namespace std;
 
 int main(int args, char** argv) {
 	std::vector<PaxosPeer> peers;
@@ -17,15 +13,11 @@ int main(int args, char** argv) {
 	peers.push_back(p);
 
 	PaxosBrain brain(peers);
-	
-	boost::shared_ptr<TProtocolFactory> protocolFactory(
-		new TBinaryProtocolFactory());
-	boost::shared_ptr<PaxosServiceHandler>	handler(new PaxosServiceHandler(brain));
-	boost::shared_ptr<TProcessor> processor(new PaxosServiceProcessor(handler));
+	PaxosThriftServer server(brain, 9090);
+	server.start();	
 
-	TNonblockingServer server(processor, protocolFactory, 9090);
+	cout << "Back in main thread!!" << endl;
 
-	server.serve();
   return 0;
 }
 

@@ -14,12 +14,11 @@ class PaxosThriftPeer : public PaxosPeer {
 public:
 	PaxosThriftPeer(std::string hostname, int port);
 	~PaxosThriftPeer();
+	void initialize();
 	void sendPropose(const PaxosProposeArgs& args, PaxosProposeResult& res);
 	void sendAccept(const PaxosAcceptArgs& args, PaxosAcceptResult& res);
 
 private:
-	void initialize();
-
 	std::mutex clientLock_;
 	std::shared_ptr<PaxosServiceClient> client_;
 	std::string hostname_;
