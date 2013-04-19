@@ -23,14 +23,34 @@ PaxosThriftPeer::~PaxosThriftPeer() {
 	client_->getInputProtocol()->getTransport()->close();
 }
 
-
 void PaxosThriftPeer::sendPropose(const PaxosProposeArgs& args, PaxosProposeResult& res) {
 	std::lock_guard<std::mutex> g(clientLock_);
-	client_->propose(res, args);
+	
+	for (int i = 0; i < MAX_RETRIES; ++i) {
+		try {
+			client_->propose(res, args);
+		} catch (...) {
+			if (i == MAX_RETRIES - 1) {
+				throw;
+			} else {
+				initialize();
+			}
+		}
+	}
 }
 
 void PaxosThriftPeer::sendAccept(const PaxosAcceptArgs& args, PaxosAcceptResult& res) {
 	std::lock_guard<std::mutex> g(clientLock_);
-	client_->accept(res, args);
+	for (int i = 0; i < MAX_RETRIES; ++i) {
+		try {
+			client_->accept(res, args);
+		} catch (...) {
+			if (i == MAX_RETRIES - 1) {
+				throw;
+			} else {
+				initialize();
+			}
+		}
+	}
 }
 
