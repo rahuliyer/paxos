@@ -4,6 +4,12 @@ PaxosBrain::PaxosBrain(std::vector<PaxosPeer>& peers) {
   peers_ = peers;
 }
 
+void PaxosBrain::initializePeers() {
+	for (auto i = peers_.begin(); i != peers_.end(); ++i) {
+		i->initialize();
+	}
+}
+
 PaxosProposeResult PaxosBrain::recvPropose(const PaxosProposeArgs& args) {
   PaxosProposeResult res;
 

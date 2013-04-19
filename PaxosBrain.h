@@ -16,6 +16,7 @@ private:
 
 public:
   PaxosBrain(std::vector<PaxosPeer>&);
+	void								initializePeers();
   void                submit(std::string& value);
 //  void                registerLearner(void (*)(std::string&);
   PaxosProposeResult  recvPropose(const PaxosProposeArgs&);
