@@ -8,6 +8,8 @@
 #include <transport/TBufferTransports.h>
 #include <protocol/TBinaryProtocol.h>
 
+#include <mutex>
+
 class PaxosThriftPeer : public PaxosPeer {
 public:
 	PaxosThriftPeer(std::string hostname, int port);
@@ -16,6 +18,11 @@ public:
 	void sendAccept(const PaxosAcceptArgs& args, PaxosAcceptResult& res);
 
 private:
+	void initialize();
+
+	std::mutex clientLock_;
 	std::shared_ptr<PaxosServiceClient> client_;
+	std::string hostname_;
+	int port_;
 };
 #endif
