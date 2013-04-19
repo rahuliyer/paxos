@@ -4,7 +4,7 @@
 
 class PaxosPeer {
 public:
-  virtual void sendPropose(PaxosProposeArgs& p, PaxosProposeResult& r) {}
-  virtual void sendAccept(PaxosAcceptArgs& a, PaxosAcceptResult& r) {}
+  virtual void sendPropose(const PaxosProposeArgs& p, PaxosProposeResult& r) {}
+  virtual void sendAccept(const PaxosAcceptArgs& a, PaxosAcceptResult& r) {}
 };
 #endif

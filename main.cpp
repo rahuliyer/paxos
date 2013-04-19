@@ -1,5 +1,5 @@
 #include "PaxosServiceHandler.h"
-#include "PaxosPeer.h"
+#include "PaxosThriftPeer.h"
 
 #include <thrift/protocol/TBinaryProtocol.h>
 #include <thrift/server/TNonblockingServer.h>
@@ -13,6 +13,9 @@ using namespace apache::thrift::server;
 
 int main(int args, char** argv) {
 	std::vector<PaxosPeer> peers;
+	PaxosThriftPeer p("localhost", 9090);
+	peers.push_back(p);
+
 	PaxosBrain brain(peers);
 	
 	boost::shared_ptr<TProtocolFactory> protocolFactory(
