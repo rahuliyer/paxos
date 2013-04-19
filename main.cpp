@@ -13,7 +13,10 @@ int main(int args, char** argv) {
 	peers.push_back(p);
 
 	PaxosBrain brain(peers);
-	PaxosThriftServer server(brain, 9090);
+	int port = atoi(argv[1]);
+	PaxosThriftServer server(brain, port);
+
+	cout << "Starting server on port " << port << endl;
 	server.start();	
 
 	cout << "Back in main thread!!" << endl;

@@ -23,5 +23,7 @@ private:
 	std::shared_ptr<PaxosServiceClient> client_;
 	std::string hostname_;
 	int port_;
+
+	const int MAX_RETRIES = 3;
 };
 #endif
