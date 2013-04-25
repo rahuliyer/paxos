@@ -1,12 +1,13 @@
 #include "PaxosBrain.h"
 
-PaxosBrain::PaxosBrain(std::vector<PaxosPeer>& peers) {
+PaxosBrain::PaxosBrain(std::vector<PaxosPeer *>& peers, PaxosLearner& learner) : learner_(learner) {
   peers_ = peers;
+  maxTriesPerSubmit_ = MAX_RETRIES;
 }
 
 void PaxosBrain::initializePeers() {
 	for (auto i = peers_.begin(); i != peers_.end(); ++i) {
-		i->initialize();
+		(*i)->initialize();
 	}
 }
 
@@ -36,7 +37,7 @@ PaxosAcceptResult PaxosBrain::recvAccept(const PaxosAcceptArgs& args) {
     res.status = PaxosAcceptStatus::REJECTED;
   } else {
     state_.setPendingTransaction(args.txn);
-    // learn
+   	learner_.learn(args.txn.value); 
     res.status = PaxosAcceptStatus::ACCEPTED;
   }
   return res;
@@ -55,7 +56,7 @@ bool PaxosBrain::sendAccept(PaxosTransaction& p) {
   for (auto i = peers_.begin(); i < peers_.end(); ++i) {
     try {
       PaxosAcceptResult par;
-      i->sendAccept(args, par);
+      (*i)->sendAccept(args, par);
       a_res.push_back(par);
     } catch (...) {
       continue;
@@ -77,8 +78,10 @@ bool PaxosBrain::sendAccept(PaxosTransaction& p) {
 
 void PaxosBrain::submit(std::string& val) {
   bool success = false;
+  int tries = 0;
 
-  while (!success) {
+  while (!success && tries < maxTriesPerSubmit_) {
+    ++tries;
     PaxosProposeArgs p_args;
 
     p_args.proposal = state_.getHighestProposalSeen() + 1;
@@ -87,7 +90,7 @@ void PaxosBrain::submit(std::string& val) {
     for (auto i = peers_.begin(); i != peers_.end(); ++i) {
       try {
         PaxosProposeResult ppr;
-        i->sendPropose(p_args, ppr);
+        (*i)->sendPropose(p_args, ppr);
         p_res.push_back(ppr);
       } catch (...) {
         continue;

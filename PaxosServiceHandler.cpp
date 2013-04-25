@@ -9,5 +9,6 @@ void PaxosServiceHandler::propose(PaxosProposeResult& res, const PaxosProposeArg
 
 void PaxosServiceHandler::accept(PaxosAcceptResult& res, const PaxosAcceptArgs& args) {
   res = brain_.recvAccept(args);
+	brain_.sentAcceptResponse();
 }
 

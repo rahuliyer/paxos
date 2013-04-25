@@ -15,8 +15,8 @@ public:
 	PaxosThriftPeer(std::string hostname, int port);
 	~PaxosThriftPeer();
 	void initialize();
-	void sendPropose(const PaxosProposeArgs& args, PaxosProposeResult& res);
-	void sendAccept(const PaxosAcceptArgs& args, PaxosAcceptResult& res);
+	virtual void sendPropose(const PaxosProposeArgs& args, PaxosProposeResult& res);
+	virtual void sendAccept(const PaxosAcceptArgs& args, PaxosAcceptResult& res);
 
 private:
 	std::mutex clientLock_;

@@ -1,18 +1,24 @@
 #include "PaxosThriftPeer.h"
 #include "PaxosThriftServer.h"
+#include "EchoLearner.h"
 
 #include <vector>
 #include <thread>
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 
-int main(int args, char** argv) {
-	std::vector<PaxosPeer> peers;
-	PaxosThriftPeer p("localhost", 9090);
-	peers.push_back(p);
+int main(int argc, char** argv) {
+	std::vector<PaxosPeer *> peers;
+	for (int port = 9090; port < 9093; ++port) {
+		PaxosThriftPeer *p = new PaxosThriftPeer("localhost", port);
+		peers.push_back(p);
+	}
 
-	PaxosBrain brain(peers);
+	EchoLearner learner;
+
+	PaxosBrain brain(peers, learner);
 	int port = atoi(argv[1]);
 	PaxosThriftServer server(brain, port);
 
@@ -20,6 +26,21 @@ int main(int args, char** argv) {
 	server.start();	
 
 	cout << "Back in main thread!!" << endl;
+
+  sleep(5);
+	if (argc == 3) {
+		for (int i = 0; i < 10; ++i) {
+			stringstream ss;
+			string s;
+			ss << i;
+			s = ss.str();
+      cout << "Submitting " << s << endl;
+			brain.submit(s);
+      sleep(5);
+		}
+
+    learner.dumpVals();
+	}
 
   return 0;
 }
