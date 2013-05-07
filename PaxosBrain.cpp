@@ -5,6 +5,10 @@ PaxosBrain::PaxosBrain(std::vector<PaxosPeer *>& peers, PaxosLearner& learner) :
   maxTriesPerSubmit_ = MAX_RETRIES;
 }
 
+void PaxosBrain::setMaxRetries(int retries) {
+  maxTriesPerSubmit_ = retries + 1;
+}
+
 void PaxosBrain::initializePeers() {
 	for (auto i = peers_.begin(); i != peers_.end(); ++i) {
 		(*i)->initialize();
@@ -76,7 +80,7 @@ bool PaxosBrain::sendAccept(PaxosTransaction& p) {
   return true;
 }
 
-void PaxosBrain::submit(std::string& val) {
+bool PaxosBrain::submit(std::string& val) {
   bool success = false;
   int tries = 0;
 
@@ -143,5 +147,7 @@ void PaxosBrain::submit(std::string& val) {
 
     // We recovered a previous transaction. Do over
   }
+
+  return success;
 }
 

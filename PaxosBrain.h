@@ -22,7 +22,7 @@ private:
 public:
   PaxosBrain(std::vector<PaxosPeer *>&, PaxosLearner&);
 	void								initializePeers();
-  void                submit(std::string& value);
+  bool                submit(std::string& value);
   PaxosProposeResult  recvPropose(const PaxosProposeArgs&);
   PaxosAcceptResult   recvAccept(const PaxosAcceptArgs&);
   void                sentAcceptResponse();
