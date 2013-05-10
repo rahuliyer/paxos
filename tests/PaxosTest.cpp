@@ -20,19 +20,22 @@ protected:
 
     peers.push_back(&peer1);
     peers.push_back(&peer2);
+    peers.push_back(&peer3);
   }
 
   MockPaxosPeer peer1;
   MockPaxosPeer peer2;
+  MockPaxosPeer peer3;
 
   vector<PaxosPeer *> peers;
 
-  PaxosProposeResult pRes;
-  PaxosAcceptResult aRes;
 };
 
 class SimpleSuccessFixture : public BasicFixture {
   virtual void SetUpExpectations() {
+    PaxosProposeResult pRes;
+    PaxosAcceptResult aRes;
+
     pRes.status = PaxosProposeStatus::PROMISE;
 
     EXPECT_CALL(peer1, sendPropose(_, _))
@@ -40,6 +43,10 @@ class SimpleSuccessFixture : public BasicFixture {
       .WillOnce(SetArgReferee<1>(pRes));
 
     EXPECT_CALL(peer2, sendPropose(_, _))
+      .Times(1)
+      .WillOnce(SetArgReferee<1>(pRes));
+
+    EXPECT_CALL(peer3, sendPropose(_, _))
       .Times(1)
       .WillOnce(SetArgReferee<1>(pRes));
 
@@ -52,11 +59,17 @@ class SimpleSuccessFixture : public BasicFixture {
     EXPECT_CALL(peer2, sendAccept(_, _))
       .Times(1)
       .WillOnce(SetArgReferee<1>(aRes));
+
+    EXPECT_CALL(peer3, sendAccept(_, _))
+      .Times(1)
+      .WillOnce(SetArgReferee<1>(aRes));
   }
 };
 
 class ProposeFailureFixture : public BasicFixture {
   virtual void SetUpExpectations() {
+    PaxosProposeResult pRes;
+
     pRes.status = PaxosProposeStatus::PROMISED_HIGHER_VERSION;
 
     EXPECT_CALL(peer1, sendPropose(_, _))
@@ -67,16 +80,26 @@ class ProposeFailureFixture : public BasicFixture {
       .Times(MAX_TRIES)
       .WillRepeatedly(SetArgReferee<1>(pRes));
 
+    EXPECT_CALL(peer3, sendPropose(_, _))
+      .Times(MAX_TRIES)
+      .WillRepeatedly(SetArgReferee<1>(pRes));
+
     EXPECT_CALL(peer1, sendAccept(_, _))
       .Times(0);
 
     EXPECT_CALL(peer2, sendAccept(_, _))
+      .Times(0);
+
+    EXPECT_CALL(peer3, sendAccept(_, _))
       .Times(0);
   }
 };
 
 class AcceptFailureFixture : public BasicFixture {
   virtual void SetUpExpectations() {
+    PaxosProposeResult pRes;
+    PaxosAcceptResult aRes;
+
     pRes.status = PaxosProposeStatus::PROMISE;
 
     EXPECT_CALL(peer1, sendPropose(_, _))
@@ -84,6 +107,10 @@ class AcceptFailureFixture : public BasicFixture {
       .WillRepeatedly(SetArgReferee<1>(pRes));
 
     EXPECT_CALL(peer2, sendPropose(_, _))
+      .Times(MAX_TRIES)
+      .WillRepeatedly(SetArgReferee<1>(pRes));
+
+    EXPECT_CALL(peer3, sendPropose(_, _))
       .Times(MAX_TRIES)
       .WillRepeatedly(SetArgReferee<1>(pRes));
 
@@ -96,6 +123,75 @@ class AcceptFailureFixture : public BasicFixture {
     EXPECT_CALL(peer2, sendAccept(_, _))
       .Times(MAX_TRIES)
       .WillRepeatedly(SetArgReferee<1>(aRes));
+
+    EXPECT_CALL(peer3, sendAccept(_, _))
+      .Times(MAX_TRIES)
+      .WillRepeatedly(SetArgReferee<1>(aRes));
+  }
+};
+
+class PartialProposeFailureFixture : public BasicFixture {
+  virtual void SetUpExpectations() {
+    PaxosProposeResult pFailRes;
+    PaxosProposeResult pSuccessRes;
+
+    pFailRes.status = PaxosProposeStatus::PROMISED_HIGHER_VERSION;
+    pSuccessRes.status = PaxosProposeStatus::PROMISE;
+
+    EXPECT_CALL(peer1, sendPropose(_, _))
+      .Times(MAX_TRIES)
+      .WillRepeatedly(SetArgReferee<1>(pSuccessRes));
+
+    EXPECT_CALL(peer2, sendPropose(_, _))
+      .Times(MAX_TRIES)
+      .WillRepeatedly(SetArgReferee<1>(pFailRes));
+
+    EXPECT_CALL(peer3, sendPropose(_, _))
+      .Times(MAX_TRIES)
+      .WillRepeatedly(SetArgReferee<1>(pFailRes));
+
+    EXPECT_CALL(peer1, sendAccept(_, _))
+      .Times(0);
+
+    EXPECT_CALL(peer2, sendAccept(_, _))
+      .Times(0);
+
+    EXPECT_CALL(peer3, sendAccept(_, _))
+      .Times(0);
+  }
+};
+
+class HigherVersionFailureFixture : public BasicFixture {
+  virtual void SetUpExpectations() {
+    PaxosProposeResult pFailRes;
+    PaxosProposeResult pSuccessRes;
+
+    pFailRes.status = PaxosProposeStatus::PROMISED_HIGHER_VERSION;
+    pSuccessRes.status = PaxosProposeStatus::PROMISE;
+
+    EXPECT_CALL(peer1, sendPropose(_, _))
+      .Times(1)
+      .WillOnce(SetArgReferee<1>(pSuccessRes));
+
+    EXPECT_CALL(peer2, sendPropose(_, _))
+      .Times(1)
+      .WillOnce(SetArgReferee<1>(pSuccessRes));
+
+    EXPECT_CALL(peer3, sendPropose(_, _))
+      .Times(1)
+      .WillOnce(SetArgReferee<1>(pFailRes));
+
+    PaxosAcceptResult aRes;
+    aRes.status = PaxosAcceptStatus::REJECTED;
+
+    EXPECT_CALL(peer1, sendAccept(_, _))
+      .Times(0);
+
+    EXPECT_CALL(peer2, sendAccept(_, _))
+      .Times(0);
+
+    EXPECT_CALL(peer3, sendAccept(_, _))
+      .Times(0);
   }
 };
 
@@ -128,6 +224,28 @@ TEST_F(AcceptFailureFixture, BasicTest) {
 
   PaxosBrain brain(peers, learner);
   brain.setMaxRetries(MAX_TRIES - 1);
+  EXPECT_FALSE(brain.submit(testString));
+}
+
+TEST_F(PartialProposeFailureFixture, BasicTest) {
+ 
+  MockPaxosLearner learner;
+
+  string testString = "haha";
+
+  PaxosBrain brain(peers, learner);
+  brain.setMaxRetries(MAX_TRIES - 1);
+  EXPECT_FALSE(brain.submit(testString));
+}
+
+TEST_F(HigherVersionFailureFixture, BasicTest) {
+ 
+  MockPaxosLearner learner;
+
+  string testString = "haha";
+
+  PaxosBrain brain(peers, learner);
+  brain.setMaxRetries(0);
   EXPECT_FALSE(brain.submit(testString));
 }
 
