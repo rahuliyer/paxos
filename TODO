@@ -1,0 +1,5 @@
+- Add test for replaying existing transaction
+- Split submit out into a separate class
+- Make log persistent
+- Write separate multithreaded client
+
