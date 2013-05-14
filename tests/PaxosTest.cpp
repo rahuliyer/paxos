@@ -2,7 +2,7 @@
 
 #include "MockPaxosPeer.h"
 #include "MockPaxosLearner.h"
-#include "PaxosBrain.h"
+#include "PaxosClient.h"
 
 #include <vector>
 #include <string>
@@ -196,55 +196,40 @@ class HigherVersionFailureFixture : public BasicFixture {
 };
 
 TEST_F(SimpleSuccessFixture, BasicTest) {
- 
-  MockPaxosLearner learner;
-
   string testString = "haha";
 
-  PaxosBrain brain(peers, learner);
+  PaxosClient brain(peers);
   EXPECT_TRUE(brain.submit(testString));
 }
 
 TEST_F(ProposeFailureFixture, BasicTest) {
- 
-  MockPaxosLearner learner;
-
   string testString = "haha";
 
-  PaxosBrain brain(peers, learner);
+  PaxosClient brain(peers);
   brain.setMaxRetries(MAX_TRIES - 1);
   EXPECT_FALSE(brain.submit(testString));
 }
 
 TEST_F(AcceptFailureFixture, BasicTest) {
- 
-  MockPaxosLearner learner;
-
   string testString = "haha";
 
-  PaxosBrain brain(peers, learner);
+  PaxosClient brain(peers);
   brain.setMaxRetries(MAX_TRIES - 1);
   EXPECT_FALSE(brain.submit(testString));
 }
 
 TEST_F(PartialProposeFailureFixture, BasicTest) {
- 
-  MockPaxosLearner learner;
-
   string testString = "haha";
 
-  PaxosBrain brain(peers, learner);
+  PaxosClient brain(peers);
   brain.setMaxRetries(MAX_TRIES - 1);
   EXPECT_FALSE(brain.submit(testString));
 }
 
 TEST_F(HigherVersionFailureFixture, BasicTest) {
- 
-  MockPaxosLearner learner;
-
   string testString = "haha";
 
-  PaxosBrain brain(peers, learner);
+  PaxosClient brain(peers);
   brain.setMaxRetries(0);
   EXPECT_FALSE(brain.submit(testString));
 }
