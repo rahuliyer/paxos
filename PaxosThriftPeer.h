@@ -17,6 +17,7 @@ public:
 	void initialize();
 	virtual void sendPropose(const PaxosProposeArgs& args, PaxosProposeResult& res);
 	virtual void sendAccept(const PaxosAcceptArgs& args, PaxosAcceptResult& res);
+  virtual int64_t getHighestProposalSeen();
 
 private:
 	std::mutex clientLock_;

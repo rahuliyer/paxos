@@ -169,8 +169,8 @@ void swap(PaxosProposeArgs &a, PaxosProposeArgs &b) {
   swap(a.__isset, b.__isset);
 }
 
-const char* PaxosProposeResult::ascii_fingerprint = "F659CE40EDA49A790FB32E0F2E4B18B8";
-const uint8_t PaxosProposeResult::binary_fingerprint[16] = {0xF6,0x59,0xCE,0x40,0xED,0xA4,0x9A,0x79,0x0F,0xB3,0x2E,0x0F,0x2E,0x4B,0x18,0xB8};
+const char* PaxosProposeResult::ascii_fingerprint = "F74CD25D6C6E498255364411DF922AB6";
+const uint8_t PaxosProposeResult::binary_fingerprint[16] = {0xF7,0x4C,0xD2,0x5D,0x6C,0x6E,0x49,0x82,0x55,0x36,0x44,0x11,0xDF,0x92,0x2A,0xB6};
 
 uint32_t PaxosProposeResult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -203,6 +203,14 @@ uint32_t PaxosProposeResult::read(::apache::thrift::protocol::TProtocol* iprot) 
         }
         break;
       case 2:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->higherProposal);
+          this->__isset.higherProposal = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->pendingTxn.read(iprot);
           this->__isset.pendingTxn = true;
@@ -230,10 +238,16 @@ uint32_t PaxosProposeResult::write(::apache::thrift::protocol::TProtocol* oprot)
   xfer += oprot->writeI32((int32_t)this->status);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("pendingTxn", ::apache::thrift::protocol::T_STRUCT, 2);
-  xfer += this->pendingTxn.write(oprot);
-  xfer += oprot->writeFieldEnd();
-
+  if (this->__isset.higherProposal) {
+    xfer += oprot->writeFieldBegin("higherProposal", ::apache::thrift::protocol::T_I64, 2);
+    xfer += oprot->writeI64(this->higherProposal);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.pendingTxn) {
+    xfer += oprot->writeFieldBegin("pendingTxn", ::apache::thrift::protocol::T_STRUCT, 3);
+    xfer += this->pendingTxn.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -242,6 +256,7 @@ uint32_t PaxosProposeResult::write(::apache::thrift::protocol::TProtocol* oprot)
 void swap(PaxosProposeResult &a, PaxosProposeResult &b) {
   using ::std::swap;
   swap(a.status, b.status);
+  swap(a.higherProposal, b.higherProposal);
   swap(a.pendingTxn, b.pendingTxn);
   swap(a.__isset, b.__isset);
 }

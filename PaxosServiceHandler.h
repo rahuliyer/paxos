@@ -7,8 +7,9 @@
 class PaxosServiceHandler : public PaxosServiceIf {
 public:
   PaxosServiceHandler(PaxosBrain&);
-  void propose(PaxosProposeResult&, const PaxosProposeArgs&);
-  void accept(PaxosAcceptResult&, const PaxosAcceptArgs&);
+  void    propose(PaxosProposeResult&, const PaxosProposeArgs&);
+  void    accept(PaxosAcceptResult&, const PaxosAcceptArgs&);
+  int64_t getHighestProposalSeen();
 
 private:
   PaxosBrain& brain_;

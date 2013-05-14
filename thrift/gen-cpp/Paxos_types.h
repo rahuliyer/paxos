@@ -130,23 +130,25 @@ class PaxosProposeArgs {
 void swap(PaxosProposeArgs &a, PaxosProposeArgs &b);
 
 typedef struct _PaxosProposeResult__isset {
-  _PaxosProposeResult__isset() : status(false), pendingTxn(false) {}
+  _PaxosProposeResult__isset() : status(false), higherProposal(false), pendingTxn(false) {}
   bool status;
+  bool higherProposal;
   bool pendingTxn;
 } _PaxosProposeResult__isset;
 
 class PaxosProposeResult {
  public:
 
-  static const char* ascii_fingerprint; // = "F659CE40EDA49A790FB32E0F2E4B18B8";
-  static const uint8_t binary_fingerprint[16]; // = {0xF6,0x59,0xCE,0x40,0xED,0xA4,0x9A,0x79,0x0F,0xB3,0x2E,0x0F,0x2E,0x4B,0x18,0xB8};
+  static const char* ascii_fingerprint; // = "F74CD25D6C6E498255364411DF922AB6";
+  static const uint8_t binary_fingerprint[16]; // = {0xF7,0x4C,0xD2,0x5D,0x6C,0x6E,0x49,0x82,0x55,0x36,0x44,0x11,0xDF,0x92,0x2A,0xB6};
 
-  PaxosProposeResult() : status((PaxosProposeStatus::type)0) {
+  PaxosProposeResult() : status((PaxosProposeStatus::type)0), higherProposal(0) {
   }
 
   virtual ~PaxosProposeResult() throw() {}
 
   PaxosProposeStatus::type status;
+  int64_t higherProposal;
   PaxosTransaction pendingTxn;
 
   _PaxosProposeResult__isset __isset;
@@ -155,15 +157,27 @@ class PaxosProposeResult {
     status = val;
   }
 
+  void __set_higherProposal(const int64_t val) {
+    higherProposal = val;
+    __isset.higherProposal = true;
+  }
+
   void __set_pendingTxn(const PaxosTransaction& val) {
     pendingTxn = val;
+    __isset.pendingTxn = true;
   }
 
   bool operator == (const PaxosProposeResult & rhs) const
   {
     if (!(status == rhs.status))
       return false;
-    if (!(pendingTxn == rhs.pendingTxn))
+    if (__isset.higherProposal != rhs.__isset.higherProposal)
+      return false;
+    else if (__isset.higherProposal && !(higherProposal == rhs.higherProposal))
+      return false;
+    if (__isset.pendingTxn != rhs.__isset.pendingTxn)
+      return false;
+    else if (__isset.pendingTxn && !(pendingTxn == rhs.pendingTxn))
       return false;
     return true;
   }

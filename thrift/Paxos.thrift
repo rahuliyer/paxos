@@ -14,8 +14,9 @@ struct PaxosProposeArgs {
 }
 
 struct PaxosProposeResult {
-  1: PaxosProposeStatus    status,
-  2: PaxosTransaction      pendingTxn,
+  1: PaxosProposeStatus             status,
+  2: optional i64                   higherProposal,                        
+  3: optional PaxosTransaction      pendingTxn,
 }
 
 enum PaxosAcceptStatus {
@@ -34,6 +35,7 @@ struct PaxosAcceptResult {
 service PaxosService {
   PaxosProposeResult  propose(1: PaxosProposeArgs pArgs),
   PaxosAcceptResult   accept(1: PaxosAcceptArgs aArgs),
+  i64                 getHighestProposalSeen(),
 }
  
 

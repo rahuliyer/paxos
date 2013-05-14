@@ -1,6 +1,7 @@
 #include "PaxosThriftPeer.h"
 #include "PaxosThriftServer.h"
 #include "EchoLearner.h"
+#include "PaxosClient.h"
 
 #include <vector>
 #include <thread>
@@ -18,7 +19,7 @@ int main(int argc, char** argv) {
 
 	EchoLearner learner;
 
-	PaxosBrain brain(peers, learner);
+	PaxosBrain brain(learner);
 	int port = atoi(argv[1]);
 	PaxosThriftServer server(brain, port);
 
@@ -28,6 +29,10 @@ int main(int argc, char** argv) {
 	cout << "Back in main thread!!" << endl;
 
   sleep(5);
+
+  PaxosClient client(peers);
+  client.initialize();
+
 	if (argc == 3) {
 		for (int i = 0; i < 10; ++i) {
 			stringstream ss;
@@ -35,7 +40,7 @@ int main(int argc, char** argv) {
 			ss << i;
 			s = ss.str();
       cout << "Submitting " << s << endl;
-			brain.submit(s);
+			client.submit(s);
       sleep(5);
 		}
 

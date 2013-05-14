@@ -6,26 +6,16 @@
 #include "PaxosState.h"
 #include "PaxosLearner.h"
 
-#include <vector>
-
 class PaxosBrain {
 private:
-  std::vector<PaxosPeer *>      peers_;
   PaxosState                    state_;
 	PaxosLearner&						      learner_;
-  int                           maxTriesPerSubmit_;
-
-  bool sendAccept(PaxosTransaction&);
-
-  const int MAX_RETRIES = 3;
 
 public:
-  PaxosBrain(std::vector<PaxosPeer *>&, PaxosLearner&);
-	void								initializePeers();
-  bool                submit(std::string& value);
+  PaxosBrain(PaxosLearner&);
   PaxosProposeResult  recvPropose(const PaxosProposeArgs&);
   PaxosAcceptResult   recvAccept(const PaxosAcceptArgs&);
   void                sentAcceptResponse();
-  void                setMaxRetries(int);
+  int64_t             getHighestProposalSeen();
 };
 #endif

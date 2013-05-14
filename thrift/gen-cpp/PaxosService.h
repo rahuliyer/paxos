@@ -17,6 +17,7 @@ class PaxosServiceIf {
   virtual ~PaxosServiceIf() {}
   virtual void propose(PaxosProposeResult& _return, const PaxosProposeArgs& pArgs) = 0;
   virtual void accept(PaxosAcceptResult& _return, const PaxosAcceptArgs& aArgs) = 0;
+  virtual int64_t getHighestProposalSeen() = 0;
 };
 
 class PaxosServiceIfFactory {
@@ -51,6 +52,10 @@ class PaxosServiceNull : virtual public PaxosServiceIf {
   }
   void accept(PaxosAcceptResult& /* _return */, const PaxosAcceptArgs& /* aArgs */) {
     return;
+  }
+  int64_t getHighestProposalSeen() {
+    int64_t _return = 0;
+    return _return;
   }
 };
 
@@ -270,6 +275,100 @@ class PaxosService_accept_presult {
 
 };
 
+
+class PaxosService_getHighestProposalSeen_args {
+ public:
+
+  PaxosService_getHighestProposalSeen_args() {
+  }
+
+  virtual ~PaxosService_getHighestProposalSeen_args() throw() {}
+
+
+  bool operator == (const PaxosService_getHighestProposalSeen_args & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const PaxosService_getHighestProposalSeen_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const PaxosService_getHighestProposalSeen_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class PaxosService_getHighestProposalSeen_pargs {
+ public:
+
+
+  virtual ~PaxosService_getHighestProposalSeen_pargs() throw() {}
+
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _PaxosService_getHighestProposalSeen_result__isset {
+  _PaxosService_getHighestProposalSeen_result__isset() : success(false) {}
+  bool success;
+} _PaxosService_getHighestProposalSeen_result__isset;
+
+class PaxosService_getHighestProposalSeen_result {
+ public:
+
+  PaxosService_getHighestProposalSeen_result() : success(0) {
+  }
+
+  virtual ~PaxosService_getHighestProposalSeen_result() throw() {}
+
+  int64_t success;
+
+  _PaxosService_getHighestProposalSeen_result__isset __isset;
+
+  void __set_success(const int64_t val) {
+    success = val;
+  }
+
+  bool operator == (const PaxosService_getHighestProposalSeen_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const PaxosService_getHighestProposalSeen_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const PaxosService_getHighestProposalSeen_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _PaxosService_getHighestProposalSeen_presult__isset {
+  _PaxosService_getHighestProposalSeen_presult__isset() : success(false) {}
+  bool success;
+} _PaxosService_getHighestProposalSeen_presult__isset;
+
+class PaxosService_getHighestProposalSeen_presult {
+ public:
+
+
+  virtual ~PaxosService_getHighestProposalSeen_presult() throw() {}
+
+  int64_t* success;
+
+  _PaxosService_getHighestProposalSeen_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 class PaxosServiceClient : virtual public PaxosServiceIf {
  public:
   PaxosServiceClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) :
@@ -296,6 +395,9 @@ class PaxosServiceClient : virtual public PaxosServiceIf {
   void accept(PaxosAcceptResult& _return, const PaxosAcceptArgs& aArgs);
   void send_accept(const PaxosAcceptArgs& aArgs);
   void recv_accept(PaxosAcceptResult& _return);
+  int64_t getHighestProposalSeen();
+  void send_getHighestProposalSeen();
+  int64_t recv_getHighestProposalSeen();
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -313,11 +415,13 @@ class PaxosServiceProcessor : public ::apache::thrift::TDispatchProcessor {
   ProcessMap processMap_;
   void process_propose(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_accept(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getHighestProposalSeen(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   PaxosServiceProcessor(boost::shared_ptr<PaxosServiceIf> iface) :
     iface_(iface) {
     processMap_["propose"] = &PaxosServiceProcessor::process_propose;
     processMap_["accept"] = &PaxosServiceProcessor::process_accept;
+    processMap_["getHighestProposalSeen"] = &PaxosServiceProcessor::process_getHighestProposalSeen;
   }
 
   virtual ~PaxosServiceProcessor() {}
@@ -364,6 +468,15 @@ class PaxosServiceMultiface : virtual public PaxosServiceIf {
     }
     ifaces_[i]->accept(_return, aArgs);
     return;
+  }
+
+  int64_t getHighestProposalSeen() {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getHighestProposalSeen();
+    }
+    return ifaces_[i]->getHighestProposalSeen();
   }
 
 };

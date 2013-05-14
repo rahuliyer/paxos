@@ -14,7 +14,7 @@ SERVER_LIBS=$(COMMON_LIBS) -lthriftnb -levent
 PAXOS_LIB=-lpaxos
 
 THRIFT_OBJS=PaxosThriftServer.o PaxosServiceHandler.o thrift/gen-cpp/PaxosService.o thrift/gen-cpp/Paxos_types.o thrift/gen-cpp/Paxos_constants.o
-OBJS=$(THRIFT_OBJS) PaxosBrain.o PaxosState.o PaxosThriftPeer.o 
+OBJS=$(THRIFT_OBJS) PaxosBrain.o PaxosState.o PaxosThriftPeer.o PaxosClient.o
 
 all: main.cpp paxos_lib
 	$(CXX) $(INCLUDES) $(FLAGS) $(DEFINES) $(LIBRARY_INCLUDES) -o main main.cpp $(PAXOS_LIB) $(SERVER_LIBS)

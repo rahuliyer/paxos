@@ -30,6 +30,11 @@ class PaxosServiceHandler : virtual public PaxosServiceIf {
     printf("accept\n");
   }
 
+  int64_t getHighestProposalSeen() {
+    // Your implementation goes here
+    printf("getHighestProposalSeen\n");
+  }
+
 };
 
 int main(int argc, char **argv) {

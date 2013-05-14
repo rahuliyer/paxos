@@ -59,3 +59,7 @@ void PaxosThriftPeer::sendAccept(const PaxosAcceptArgs& args, PaxosAcceptResult&
 	}
 }
 
+int64_t PaxosThriftPeer::getHighestProposalSeen() {
+  std::lock_guard<std::mutex> g(clientLock_);
+  return client_->getHighestProposalSeen();
+}

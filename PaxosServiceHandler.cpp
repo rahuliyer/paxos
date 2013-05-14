@@ -12,3 +12,7 @@ void PaxosServiceHandler::accept(PaxosAcceptResult& res, const PaxosAcceptArgs& 
 	brain_.sentAcceptResponse();
 }
 
+int64_t PaxosServiceHandler::getHighestProposalSeen() {
+  return brain_.getHighestProposalSeen();
+}
+
