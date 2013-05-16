@@ -1,6 +1,7 @@
 struct PaxosTransaction {
   1: i64      proposal,
   2: binary   value,
+  3: bool     committed,
 }
 
 enum PaxosProposeStatus {

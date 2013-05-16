@@ -4,15 +4,17 @@
 #include "Paxos_types.h"
 #include "PaxosThriftPeer.h"
 #include "PaxosState.h"
+#include "PaxosStateLogger.h"
 #include "PaxosLearner.h"
 
 class PaxosBrain {
 private:
-  PaxosState                    state_;
+  PaxosStateLogger&             stateLogger_;
 	PaxosLearner&						      learner_;
+  PaxosState                    state_;
 
 public:
-  PaxosBrain(PaxosLearner&);
+  PaxosBrain(PaxosStateLogger&, PaxosLearner&);
   PaxosProposeResult  recvPropose(const PaxosProposeArgs&);
   PaxosAcceptResult   recvAccept(const PaxosAcceptArgs&);
   void                sentAcceptResponse();

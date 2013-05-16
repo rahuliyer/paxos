@@ -2,6 +2,8 @@
 #define __PAXOS_STATE_H__
 
 #include "Paxos_types.h"
+#include "PaxosStateLogger.h"
+
 #include <mutex>
 
 class PaxosState {
@@ -11,8 +13,10 @@ private:
   bool              txnInProgress_;
   PaxosTransaction  pendingTxn_;
 
+  PaxosStateLogger& logger_;
+
 public:
-  PaxosState();
+  PaxosState(PaxosStateLogger&);
   int64_t             getHighestProposalSeen();
   void                setHighestProposalSeen(int64_t);
 

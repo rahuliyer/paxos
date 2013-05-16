@@ -1,6 +1,9 @@
 #include "PaxosBrain.h"
 
-PaxosBrain::PaxosBrain(PaxosLearner& learner) : learner_(learner) {
+PaxosBrain::PaxosBrain(PaxosStateLogger& logger, 
+    PaxosLearner& learner) : stateLogger_(logger), 
+    learner_(learner),
+    state_(stateLogger_) {
 }
 
 PaxosProposeResult PaxosBrain::recvPropose(const PaxosProposeArgs& args) {

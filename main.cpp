@@ -2,6 +2,9 @@
 #include "PaxosThriftServer.h"
 #include "EchoLearner.h"
 #include "PaxosClient.h"
+#include "PaxosFileLogger.h"
+
+#include "util/PosixOps.h"
 
 #include <vector>
 #include <thread>
@@ -11,41 +14,46 @@
 using namespace std;
 
 int main(int argc, char** argv) {
-	std::vector<PaxosPeer *> peers;
-	for (int port = 9090; port < 9093; ++port) {
-		PaxosThriftPeer *p = new PaxosThriftPeer("localhost", port);
-		peers.push_back(p);
-	}
+  std::vector<PaxosPeer *> peers;
+  for (int port = 9090; port < 9093; ++port) {
+    PaxosThriftPeer *p = new PaxosThriftPeer("localhost", port);
+    peers.push_back(p);
+  }
 
-	EchoLearner learner;
+  char buf[255];
+  sprintf(buf, "/tmp/paxos_log_%s", argv[1]);
 
-	PaxosBrain brain(learner);
-	int port = atoi(argv[1]);
-	PaxosThriftServer server(brain, port);
+  EchoLearner learner;
+  PaxosFileLogger logger(buf, "log_");
+  logger.setMaxLogFileSize(600);
 
-	cout << "Starting server on port " << port << endl;
-	server.start();	
+  PaxosBrain brain(logger, learner);
+  int port = atoi(argv[1]);
+  PaxosThriftServer server(brain, port);
 
-	cout << "Back in main thread!!" << endl;
+  cout << "Starting server on port " << port << endl;
+  server.start();	
+
+  cout << "Back in main thread!!" << endl;
 
   sleep(5);
 
-  PaxosClient client(peers);
-  client.initialize();
+  if (argc == 3) {
+    PaxosClient client(peers);
+    client.initialize();
 
-	if (argc == 3) {
-		for (int i = 0; i < 10; ++i) {
-			stringstream ss;
-			string s;
-			ss << i;
-			s = ss.str();
+    for (int i = 0; i < 10; ++i) {
+      stringstream ss;
+      string s;
+      ss << i;
+      s = ss.str();
       cout << "Submitting " << s << endl;
-			client.submit(s);
-      sleep(5);
-		}
+      client.submit(s);
+      sleep(2);
+    }
 
     learner.dumpVals();
-	}
+  }
 
   return 0;
 }

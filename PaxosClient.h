@@ -2,7 +2,7 @@
 #define __PAXOS_CLIENT_H__
 
 #include "PaxosPeer.h"
-#include "thrift/gen-cpp/Paxos_types.h"
+#include "Paxos_types.h"
 
 #include <vector>
 #include <mutex>

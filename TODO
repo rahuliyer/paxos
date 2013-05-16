@@ -1,5 +1,6 @@
 - Add test for replaying existing transaction
-- Split submit out into a separate class
 - Make log persistent
+- Add checksum to the log
 - Write separate multithreaded client
 - Add tests for PaxosBrain
+- Add namespaces
