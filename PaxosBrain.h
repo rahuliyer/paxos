@@ -3,18 +3,19 @@
 
 #include "Paxos_types.h"
 #include "PaxosThriftPeer.h"
-#include "PaxosState.h"
+#include "PaxosStateIf.h"
 #include "PaxosStateLogger.h"
 #include "PaxosLearner.h"
 
 class PaxosBrain {
 private:
-  PaxosStateLogger&             stateLogger_;
 	PaxosLearner&						      learner_;
-  PaxosState                    state_;
+  std::shared_ptr<PaxosStateIf> state_;
 
 public:
   PaxosBrain(PaxosStateLogger&, PaxosLearner&);
+  PaxosBrain(std::shared_ptr<PaxosStateIf> state, PaxosLearner&);
+
   PaxosProposeResult  recvPropose(const PaxosProposeArgs&);
   PaxosAcceptResult   recvAccept(const PaxosAcceptArgs&);
   void                sentAcceptResponse();

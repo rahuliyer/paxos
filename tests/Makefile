@@ -13,7 +13,9 @@ GMOCK_DEP_LIBS=-pthread
 
 INCLUDES=-I.. -I ../thrift/gen-cpp -I. -I/usr/local/include/thrift
 
-all: PaxosPeerTest PaxosFileLoggerTest
+TESTS=PaxosPeerTest PaxosFileLoggerTest PaxosBrainTest
+
+all: $(TESTS)
 
 PaxosPeerTest: PaxosPeerTest.cpp
 	$(CXX) $(FLAGS) $(DEFINES) $(INCLUDES) $(PAXOS_LIB_PATH) \
@@ -25,7 +27,16 @@ PaxosFileLoggerTest: PaxosFileLoggerTest.cpp
     $(GMOCK_INCLUDES) $(GMOCK_LIB_DIR) $(GMOCK_DEP_LIBS) \
     PaxosFileLoggerTest.cpp $(GMOCK_LIB) -o PaxosFileLoggerTest $(PAXOS_LIB)
 
+PaxosBrainTest: PaxosBrainTest.cpp
+	$(CXX) $(FLAGS) $(DEFINES) $(INCLUDES) $(PAXOS_LIB_PATH) \
+    $(GMOCK_INCLUDES) $(GMOCK_LIB_DIR) $(GMOCK_DEP_LIBS) \
+    PaxosBrainTest.cpp $(GMOCK_LIB) -o PaxosBrainTest $(PAXOS_LIB)
+
 .PHONY : clean
 clean:
-	rm -f *.o PaxosPeerTest PaxosFileLoggerTest
+	rm -f *.o $(TESTS)
+
+.PHONY : runtests
+runtests: all
+	./testrunner.sh $(TESTS)
 

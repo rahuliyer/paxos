@@ -2,11 +2,12 @@
 #define __PAXOS_STATE_H__
 
 #include "Paxos_types.h"
+#include "PaxosStateIf.h"
 #include "PaxosStateLogger.h"
 
 #include <mutex>
 
-class PaxosState {
+class PaxosState : public PaxosStateIf {
 private:
   std::mutex        stateLock_;
   int64_t           highestProposalSeen_;

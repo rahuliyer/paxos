@@ -1,25 +1,30 @@
 #include "PaxosBrain.h"
+#include "PaxosState.h"
 
 PaxosBrain::PaxosBrain(PaxosStateLogger& logger, 
-    PaxosLearner& learner) : stateLogger_(logger), 
-    learner_(learner),
-    state_(stateLogger_) {
+    PaxosLearner& learner) : learner_(learner) {
+    state_.reset(new PaxosState(logger));
 }
 
+PaxosBrain::PaxosBrain(std::shared_ptr<PaxosStateIf> state, 
+    PaxosLearner& learner) : learner_(learner), state_(state) {
+}
+  
 PaxosProposeResult PaxosBrain::recvPropose(const PaxosProposeArgs& args) {
   PaxosProposeResult res;
 
-  if (args.proposal <= state_.getHighestProposalSeen()) {
+  int64_t highestProposal = state_->getHighestProposalSeen();
+  if (args.proposal <= highestProposal) {
     // We have agreed to a higher proposal
     res.status = PaxosProposeStatus::PROMISED_HIGHER_VERSION;
-    res.higherProposal = state_.getHighestProposalSeen();
-  } else if (state_.isTransactionInProgress()) {
+    res.higherProposal = highestProposal;
+  } else if (state_->isTransactionInProgress()) {
     // Proposer crashed before we could respond
-    res.pendingTxn = state_.getPendingTransaction();
+    res.pendingTxn = state_->getPendingTransaction();
     res.status = PaxosProposeStatus::HAS_UNFINISHED_TRANSACTION;
   } else {
     // It's all good. Let's promise not to honor any lower proposals
-    state_.setHighestProposalSeen(args.proposal);
+    state_->setHighestProposalSeen(args.proposal);
     res.status = PaxosProposeStatus::PROMISE;
   }
  
@@ -29,10 +34,10 @@ PaxosProposeResult PaxosBrain::recvPropose(const PaxosProposeArgs& args) {
 PaxosAcceptResult PaxosBrain::recvAccept(const PaxosAcceptArgs& args) {
   PaxosAcceptResult res;
 
-  if (args.txn.proposal < state_.getHighestProposalSeen()) {
+  if (args.txn.proposal < state_->getHighestProposalSeen()) {
     res.status = PaxosAcceptStatus::REJECTED;
   } else {
-    state_.setPendingTransaction(args.txn);
+    state_->setPendingTransaction(args.txn);
    	learner_.learn(args.txn.value); 
     res.status = PaxosAcceptStatus::ACCEPTED;
   }
@@ -41,10 +46,10 @@ PaxosAcceptResult PaxosBrain::recvAccept(const PaxosAcceptArgs& args) {
 
 void PaxosBrain::sentAcceptResponse() {
   // Successfully sent the response to the proposer. Clear state
-  state_.clearPendingTransaction();
+  state_->clearPendingTransaction();
 }
 
 int64_t PaxosBrain::getHighestProposalSeen() {
-  return state_.getHighestProposalSeen();
+  return state_->getHighestProposalSeen();
 }
 

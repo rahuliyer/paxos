@@ -1,6 +1,7 @@
 #ifndef __MOCK_PAXOS_LEARNER_H__
 #define __MOCK_PAXOS_LEARNER_H__
 
+#include "gmock/gmock.h"
 #include "PaxosLearner.h"
 
 class MockPaxosLearner : public PaxosLearner {
