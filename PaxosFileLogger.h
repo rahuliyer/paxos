@@ -5,6 +5,7 @@
 #include "util/ThriftSerializer.h"
 #include "util/PosixOpsIf.h"
 
+namespace Paxos {
 struct LogEntry {
   uint8_t*  buffer;
   uint8_t   committed;
@@ -45,5 +46,5 @@ private:
   PosixOpsIf*         posix_;
   bool                shouldDeallocatePosix_;
 };
-
+}
 #endif

@@ -1,6 +1,7 @@
 #include "PaxosState.h"
 
 using namespace std;
+using namespace Paxos;
 
 PaxosState::PaxosState(PaxosStateLogger& logger) : logger_(logger) {
   highestProposalSeen_ = -1;

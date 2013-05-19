@@ -1,5 +1,7 @@
 #include "PaxosServiceHandler.h"
 
+using namespace Paxos;
+
 PaxosServiceHandler::PaxosServiceHandler(PaxosBrain& brain) : brain_(brain) {
 }
 

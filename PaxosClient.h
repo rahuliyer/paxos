@@ -7,6 +7,7 @@
 #include <vector>
 #include <mutex>
 
+namespace Paxos {
 class PaxosClient {
 public:
   PaxosClient(std::vector<PaxosPeer *>& peers);
@@ -24,5 +25,5 @@ private:
   int64_t                  highestProposalSeen_;
   std::mutex               clientLock_;
 };
-
+}
 #endif

@@ -4,6 +4,7 @@
 #include "PaxosService.h"
 #include "PaxosBrain.h"
 
+namespace Paxos {
 class PaxosServiceHandler : public PaxosServiceIf {
 public:
   PaxosServiceHandler(PaxosBrain&);
@@ -14,5 +15,6 @@ public:
 private:
   PaxosBrain& brain_;
 };
+}
 
 #endif

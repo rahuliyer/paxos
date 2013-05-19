@@ -3,6 +3,7 @@
 
 #include "PaxosStateIf.h"
 
+namespace Paxos {
 class MockPaxosState : public PaxosStateIf {
 public:
   MOCK_METHOD0(getHighestProposalSeen, int64_t());
@@ -12,5 +13,6 @@ public:
   MOCK_METHOD1(setPendingTransaction, void(const PaxosTransaction&));
   MOCK_METHOD0(clearPendingTransaction, void());
 };
+}
 
 #endif

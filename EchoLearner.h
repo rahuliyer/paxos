@@ -2,6 +2,8 @@
 
 #include <vector>
 
+using namespace Paxos;
+
 class EchoLearner : public PaxosLearner {
 public:
 	virtual void learn(const std::string& val) {

@@ -1,6 +1,8 @@
 #include "PaxosBrain.h"
 #include "PaxosState.h"
 
+using namespace Paxos;
+
 PaxosBrain::PaxosBrain(PaxosStateLogger& logger, 
     PaxosLearner& learner) : learner_(learner) {
     state_.reset(new PaxosState(logger));

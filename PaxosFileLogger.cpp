@@ -12,6 +12,7 @@
 #include <memory>
 
 using namespace std;
+using namespace Paxos;
 
 PaxosFileLogger::PaxosFileLogger(const string dir, 
     const string prefix,

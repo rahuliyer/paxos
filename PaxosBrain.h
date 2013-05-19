@@ -7,6 +7,7 @@
 #include "PaxosStateLogger.h"
 #include "PaxosLearner.h"
 
+namespace Paxos {
 class PaxosBrain {
 private:
 	PaxosLearner&						      learner_;
@@ -21,4 +22,5 @@ public:
   void                sentAcceptResponse();
   int64_t             getHighestProposalSeen();
 };
+}
 #endif

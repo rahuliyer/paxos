@@ -9,6 +9,8 @@ using namespace apache::thrift::protocol;
 using namespace apache::thrift::transport;
 using namespace apache::thrift::server;
 
+using namespace Paxos;
+
 PaxosThriftServer::PaxosThriftServer(PaxosBrain& brain, int port) : brain_(brain), port_(port) {
 }
 

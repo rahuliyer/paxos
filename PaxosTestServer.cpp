@@ -10,6 +10,7 @@
 #include <sstream>
 
 using namespace std;
+using namespace Paxos;
 
 int main(int argc, char** argv) {
   char buf[255];

@@ -3,6 +3,7 @@
 
 #include "Paxos_types.h"
 
+namespace Paxos {
 class PaxosStateIf {
 public:
   virtual int64_t           getHighestProposalSeen() = 0;
@@ -14,5 +15,5 @@ public:
   virtual void              setPendingTransaction(const PaxosTransaction&) = 0;
   virtual void              clearPendingTransaction() = 0;
 };
-  
+}
 #endif

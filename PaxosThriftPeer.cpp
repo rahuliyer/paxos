@@ -4,6 +4,8 @@ using namespace apache::thrift;
 using namespace apache::thrift::transport;
 using namespace apache::thrift::protocol;
 
+using namespace Paxos;
+
 PaxosThriftPeer::PaxosThriftPeer(std::string host, int port) {
 	hostname_ = host;
 	port_ = port;

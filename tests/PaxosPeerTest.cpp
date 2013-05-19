@@ -11,6 +11,7 @@
 
 using namespace std;
 using namespace testing;
+using namespace Paxos;
 
 class BasicFixture : public Test {
 protected:

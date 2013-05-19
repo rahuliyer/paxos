@@ -2,6 +2,7 @@
 #include "PaxosFileLogger.h"
 
 using namespace testing;
+using namespace Paxos;
 
 typedef int CopyBufferMethod(int, void*, unsigned long);
 

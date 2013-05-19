@@ -5,6 +5,7 @@
 
 #include <thread>
 
+namespace Paxos {
 class PaxosThriftServer {
 public:
 	PaxosThriftServer(PaxosBrain&, int port = 9090);
@@ -16,4 +17,6 @@ private:
 	PaxosBrain& brain_;
 	int port_;
 };
+}
+
 #endif

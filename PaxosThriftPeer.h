@@ -10,6 +10,7 @@
 
 #include <mutex>
 
+namespace Paxos {
 class PaxosThriftPeer : public PaxosPeer {
 public:
 	PaxosThriftPeer(std::string hostname, int port);
@@ -27,4 +28,6 @@ private:
 
 	const int MAX_RETRIES = 3;
 };
+}
+
 #endif

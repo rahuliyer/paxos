@@ -1,6 +1,7 @@
 #ifndef __PAXOS_STATE_LOGGER_EXCEPTION_H__
 #define __PAXOS_STATE_LOGGER_EXCEPTION_H__
 
+namespace Paxos {
 class PaxosStateLoggerException : public std::exception {
 public:
   static const int LOG_NOT_FOUND = 0;
@@ -18,5 +19,5 @@ private:
   const int         errcode_;
   const std::string what_;
 };
-
+}
 #endif

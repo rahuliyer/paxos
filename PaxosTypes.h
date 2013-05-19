@@ -4,6 +4,7 @@
 
 #include <mutex>
 
+namespace Paxos {
 struct PaxosTransaction {
   int64_t       proposal;
   std::string   value;
@@ -36,5 +37,5 @@ struct PaxosAcceptArgs {
 struct PaxosAcceptResult {
   PaxosAcceptStatus status;
 };
-
+}
 #endif

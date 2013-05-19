@@ -1,5 +1,6 @@
 #include "PaxosClient.h"
 using namespace std;
+using namespace Paxos;
 
 PaxosClient::PaxosClient(vector<PaxosPeer *>& peers) {
   peers_ = peers;

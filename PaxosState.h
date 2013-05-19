@@ -7,6 +7,7 @@
 
 #include <mutex>
 
+namespace Paxos {
 class PaxosState : public PaxosStateIf {
 private:
   std::mutex        stateLock_;
@@ -27,5 +28,5 @@ public:
   void                setPendingTransaction(const PaxosTransaction&);
   void                clearPendingTransaction();
 };
-  
+}  
 #endif

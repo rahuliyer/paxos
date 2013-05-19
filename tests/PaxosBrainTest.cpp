@@ -7,6 +7,7 @@
 
 using namespace std;
 using namespace testing;
+using namespace Paxos;
 
 TEST(SimpleProposeTest, PaxosBrainTest) {
   PaxosProposeArgs args;
