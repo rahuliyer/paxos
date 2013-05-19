@@ -80,6 +80,7 @@ bool PaxosClient::submit(std::string& val) {
 
     unsigned int numPromises = 0;
     bool shouldSendAccept = true;
+    bool isReplaying = false;
     PaxosTransaction highestPendingTxn;
     highestPendingTxn.proposal = -1;
     for (auto i = p_res.begin(); i != p_res.end(); ++i) {
@@ -100,6 +101,8 @@ bool PaxosClient::submit(std::string& val) {
         if (i->pendingTxn.proposal > highestPendingTxn.proposal) {
           highestPendingTxn = i->pendingTxn;
         }
+
+        isReplaying = true;
       }
     }
 
@@ -115,13 +118,16 @@ bool PaxosClient::submit(std::string& val) {
     }
       
     bool status = sendAccept(highestPendingTxn);
-
-    if (status && highestPendingTxn.proposal == p_args.proposal) {
-      // We successfully agreed upon our value
-      success = true;
+    
+    if (isReplaying) {
+      isReplaying = false;
+      // We recovered a previous transaction, so success stays false; Do over
+    } else {
+      if (status && highestPendingTxn.proposal == p_args.proposal) {
+        // We successfully agreed upon our value
+        success = true;
+      }
     }
-
-    // We recovered a previous transaction. Do over
   }
 
   return success;

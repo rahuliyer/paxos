@@ -195,6 +195,55 @@ class HigherVersionFailureFixture : public BasicFixture {
   }
 };
 
+class PendingTransactionFixture : public BasicFixture {
+  virtual void SetUpExpectations() {
+    PaxosProposeResult pFailRes;
+    PaxosProposeResult pSuccessRes;
+
+    PaxosTransaction txn;
+    txn.proposal = 1;
+    txn.value = "haha0";
+
+    pFailRes.status = PaxosProposeStatus::HAS_UNFINISHED_TRANSACTION;
+    pFailRes.pendingTxn = txn;
+
+    pSuccessRes.status = PaxosProposeStatus::PROMISE;
+
+    EXPECT_CALL(peer1, sendPropose(_, _))
+      .Times(2)
+      .WillRepeatedly(SetArgReferee<1>(pSuccessRes));
+
+    EXPECT_CALL(peer2, sendPropose(_, _))
+      .Times(2)
+      .WillRepeatedly(SetArgReferee<1>(pSuccessRes));
+
+    EXPECT_CALL(peer3, sendPropose(_, _))
+      .Times(2)
+      .WillOnce(SetArgReferee<1>(pFailRes))
+      .WillOnce(SetArgReferee<1>(pSuccessRes));
+
+    PaxosAcceptResult aSuccessRes;
+    aSuccessRes.status = PaxosAcceptStatus::ACCEPTED;
+
+    PaxosAcceptResult aFailRes;
+    aFailRes.status = PaxosAcceptStatus::REJECTED;
+
+    EXPECT_CALL(peer1, sendAccept(_, _))
+      .Times(2)
+      .WillOnce(SetArgReferee<1>(aFailRes))
+      .WillOnce(SetArgReferee<1>(aSuccessRes));
+
+    EXPECT_CALL(peer2, sendAccept(_, _))
+      .Times(2)
+      .WillOnce(SetArgReferee<1>(aFailRes))
+      .WillOnce(SetArgReferee<1>(aSuccessRes));
+
+    EXPECT_CALL(peer3, sendAccept(_, _))
+      .Times(2)
+      .WillRepeatedly(SetArgReferee<1>(aSuccessRes));
+  }
+};
+
 TEST_F(SimpleSuccessFixture, BasicTest) {
   string testString = "haha";
 
@@ -232,6 +281,13 @@ TEST_F(HigherVersionFailureFixture, BasicTest) {
   PaxosClient brain(peers);
   brain.setMaxRetries(0);
   EXPECT_FALSE(brain.submit(testString));
+}
+
+TEST_F(PendingTransactionFixture, BasicTest) {
+  string testString = "haha1";
+
+  PaxosClient brain(peers);
+  EXPECT_TRUE(brain.submit(testString));
 }
 
 int main(int argc, char **argv) {
