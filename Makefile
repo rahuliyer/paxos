@@ -13,27 +13,31 @@ COMMON_LIBS=-lthrift
 SERVER_LIBS=$(COMMON_LIBS) -lthriftnb -levent
 PAXOS_LIB=-lpaxos
 
-THRIFT_OBJS=PaxosThriftServer.o PaxosServiceHandler.o thrift/gen-cpp/PaxosService.o thrift/gen-cpp/Paxos_types.o thrift/gen-cpp/Paxos_constants.o
-OBJS=$(THRIFT_OBJS) PaxosBrain.o PaxosFileLogger.o PaxosState.o PaxosThriftPeer.o PaxosClient.o 
+THRIFT_OBJS=thrift/gen-cpp/PaxosService.o thrift/gen-cpp/Paxos_types.o \
+	thrift/gen-cpp/Paxos_constants.o
+OBJS=$(THRIFT_OBJS) PaxosThriftServer.o PaxosServiceHandler.o \
+	PaxosBrain.o PaxosFileLogger.o PaxosState.o PaxosThriftPeer.o PaxosClient.o 
 
-all: PaxosTestServer.o PaxosTestClient.o paxos_lib
-	$(CXX) $(INCLUDES) $(FLAGS) $(DEFINES) $(LIBRARY_INCLUDES) \
-    -o PaxosTestServer PaxosTestServer.o $(PAXOS_LIB) $(SERVER_LIBS)
+all: libpaxos.a PaxosTestServer PaxosTestClient
 
+PaxosTestClient: libpaxos.a PaxosTestClient.o
 	$(CXX) $(INCLUDES) $(FLAGS) $(DEFINES) $(LIBRARY_INCLUDES) \
     -o PaxosTestClient PaxosTestClient.o $(PAXOS_LIB) $(SERVER_LIBS)
 
-%.o: %.cpp thrift
+PaxosTestServer: libpaxos.a PaxosTestServer.o
+	$(CXX) $(INCLUDES) $(FLAGS) $(DEFINES) $(LIBRARY_INCLUDES) \
+    -o PaxosTestServer PaxosTestServer.o $(PAXOS_LIB) $(SERVER_LIBS)
+
+%.o: %.cpp
 	$(CXX) $(INCLUDES) $(FLAGS) $(DEFINES) -c $< -o $@
 
-.PHONY : paxos_lib
-paxos_lib: $(OBJS)
+libpaxos.a: $(OBJS)
 	$(AR) rcs libpaxos.a $(OBJS)
 
-.PHONY : thrift
-thrift: 
+.PHONY: thrift
+thrift:
 	$(THRIFT) --gen cpp -o $(THRIFTDIR) $(THRIFTDIR)/Paxos.thrift
-
+	
 .PHONY : clean
 clean:
 	rm -rf $(THRIFTDIR)/gen-cpp
