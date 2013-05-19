@@ -1,4 +1,5 @@
-main
+PaxosTestServer
+PaxosTestClient
 *.o
 libpaxos.a
 *.swp

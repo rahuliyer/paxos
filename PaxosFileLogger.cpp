@@ -20,6 +20,7 @@ PaxosFileLogger::PaxosFileLogger(const string dir,
   currentFile_ = "";
   currentFd_ = -1;
   currentSuffix_ = 0;
+  maxSize_ = MAX_FILE_SIZE;
 
   if (posix) {
     posix_ = posix;
