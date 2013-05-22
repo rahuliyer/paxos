@@ -1,1 +1,2 @@
 - Add checksum to the log
+- Make the sends nonblocking
