@@ -31,7 +31,6 @@ int main(int argc, char** argv) {
     s = ss.str();
     cout << "Submitting " << s << endl;
     client.submit(s);
-//    sleep(2);
   }
 
   return 0;

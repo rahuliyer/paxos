@@ -52,6 +52,16 @@ bool PaxosClient::sendAccept(PaxosTransaction& p) {
   return true;
 }
 
+void PaxosClient::sendLearn(std::string& val) {
+  for (auto i = peers_.begin(); i < peers_.end(); ++i) {
+    try {
+      (*i)->sendLearn(val);
+    } catch (...) {
+      continue;
+    }
+  }
+}
+
 bool PaxosClient::submit(std::string& val) {
   bool success = false;
   int tries = 0;
@@ -129,6 +139,10 @@ bool PaxosClient::submit(std::string& val) {
         success = true;
       }
     }
+  }
+
+  if (success) {
+    sendLearn(val);
   }
 
   return success;

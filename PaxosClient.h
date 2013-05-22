@@ -19,6 +19,7 @@ private:
   const int   MAX_RETRIES = 3;
 
   bool sendAccept(PaxosTransaction&);
+  void sendLearn(std::string&);
 
   int                      maxTriesPerSubmit_;
   std::vector<PaxosPeer *> peers_;

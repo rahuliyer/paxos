@@ -40,7 +40,6 @@ PaxosAcceptResult PaxosBrain::recvAccept(const PaxosAcceptArgs& args) {
     res.status = PaxosAcceptStatus::REJECTED;
   } else {
     state_->setPendingTransaction(args.txn);
-   	learner_.learn(args.txn.value); 
     res.status = PaxosAcceptStatus::ACCEPTED;
   }
   return res;
@@ -49,6 +48,10 @@ PaxosAcceptResult PaxosBrain::recvAccept(const PaxosAcceptArgs& args) {
 void PaxosBrain::sentAcceptResponse() {
   // Successfully sent the response to the proposer. Clear state
   state_->clearPendingTransaction();
+}
+
+void PaxosBrain::learn(const std::string& value) {
+  learner_.learn(value);
 }
 
 int64_t PaxosBrain::getHighestProposalSeen() {

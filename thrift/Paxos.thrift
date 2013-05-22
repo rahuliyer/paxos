@@ -38,6 +38,7 @@ struct PaxosAcceptResult {
 service PaxosService {
   PaxosProposeResult  propose(1: PaxosProposeArgs pArgs),
   PaxosAcceptResult   accept(1: PaxosAcceptArgs aArgs),
+  void                learn(1: binary value);
   i64                 getHighestProposalSeen(),
 }
  

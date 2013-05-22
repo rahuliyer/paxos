@@ -61,6 +61,23 @@ void PaxosThriftPeer::sendAccept(const PaxosAcceptArgs& args, PaxosAcceptResult&
 	}
 }
 
+void PaxosThriftPeer::sendLearn(const std::string& val) {
+	std::lock_guard<std::mutex> g(clientLock_);
+	for (int i = 0; i < MAX_RETRIES; ++i) {
+		try {
+			client_->learn(val);
+		} catch (...) {
+			if (i == MAX_RETRIES - 1) {
+				throw;
+			} else {
+				initialize();
+			}
+      continue;
+		}
+    break;
+	}
+}
+
 int64_t PaxosThriftPeer::getHighestProposalSeen() {
   std::lock_guard<std::mutex> g(clientLock_);
   return client_->getHighestProposalSeen();

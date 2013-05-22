@@ -18,6 +18,7 @@ public:
 	void initialize();
 	virtual void sendPropose(const PaxosProposeArgs& args, PaxosProposeResult& res);
 	virtual void sendAccept(const PaxosAcceptArgs& args, PaxosAcceptResult& res);
+  virtual void sendLearn(const std::string& val);
   virtual int64_t getHighestProposalSeen();
 
 private:

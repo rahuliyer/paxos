@@ -14,6 +14,10 @@ void PaxosServiceHandler::accept(PaxosAcceptResult& res, const PaxosAcceptArgs& 
 	brain_.sentAcceptResponse();
 }
 
+void PaxosServiceHandler::learn(const std::string& value) {
+  brain_.learn(value);
+}
+
 int64_t PaxosServiceHandler::getHighestProposalSeen() {
   return brain_.getHighestProposalSeen();
 }

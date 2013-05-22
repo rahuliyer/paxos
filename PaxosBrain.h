@@ -20,6 +20,7 @@ public:
   PaxosProposeResult  recvPropose(const PaxosProposeArgs&);
   PaxosAcceptResult   recvAccept(const PaxosAcceptArgs&);
   void                sentAcceptResponse();
+  void                learn(const std::string&);
   int64_t             getHighestProposalSeen();
 };
 }

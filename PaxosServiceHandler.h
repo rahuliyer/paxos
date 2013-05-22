@@ -10,6 +10,7 @@ public:
   PaxosServiceHandler(PaxosBrain&);
   void    propose(PaxosProposeResult&, const PaxosProposeArgs&);
   void    accept(PaxosAcceptResult&, const PaxosAcceptArgs&);
+  void    learn(const std::string& value);
   int64_t getHighestProposalSeen();
 
 private:
