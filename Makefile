@@ -18,7 +18,7 @@ THRIFT_OBJS=thrift/gen-cpp/PaxosService.o thrift/gen-cpp/Paxos_types.o \
 OBJS=$(THRIFT_OBJS) PaxosThriftServer.o PaxosServiceHandler.o \
 	PaxosBrain.o PaxosFileLogger.o PaxosState.o PaxosThriftPeer.o PaxosClient.o 
 
-all: libpaxos.a PaxosTestServer PaxosTestClient
+all: libpaxos.a PaxosTestServer PaxosTestClient PaxosFileLogReader
 
 PaxosTestClient: libpaxos.a PaxosTestClient.o
 	$(CXX) $(INCLUDES) $(FLAGS) $(DEFINES) $(LIBRARY_INCLUDES) \
@@ -27,6 +27,10 @@ PaxosTestClient: libpaxos.a PaxosTestClient.o
 PaxosTestServer: libpaxos.a PaxosTestServer.o
 	$(CXX) $(INCLUDES) $(FLAGS) $(DEFINES) $(LIBRARY_INCLUDES) \
     -o PaxosTestServer PaxosTestServer.o $(PAXOS_LIB) $(SERVER_LIBS)
+
+PaxosFileLogReader: PaxosFileLogReader.o
+	$(CXX) $(INCLUDES) $(FLAGS) $(DEFINES) $(LIBRARY_INCLUDES) \
+    -o PaxosFileLogReader PaxosFileLogReader.o $(PAXOS_LIB) $(SERVER_LIBS)
 
 %.o: %.cpp
 	$(CXX) $(INCLUDES) $(FLAGS) $(DEFINES) -c $< -o $@

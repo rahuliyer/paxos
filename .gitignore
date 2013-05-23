@@ -1,5 +1,6 @@
 PaxosTestServer
 PaxosTestClient
+PaxosFileLogReader
 *.o
 libpaxos.a
 *.swp

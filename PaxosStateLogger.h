@@ -8,7 +8,7 @@ namespace Paxos {
 class PaxosStateLogger {
 public:
   virtual void log(const PaxosTransaction&) = 0;
-  virtual void getLatestTransaction(PaxosTransaction&) = 0;
+  virtual bool getLatestTransaction(PaxosTransaction&) = 0;
   virtual void commitLatestTransaction() = 0;
 };
 }

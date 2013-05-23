@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
   PaxosClient client(peers);
   client.initialize();
 
-  for (int i = 0; i < 100000; ++i) {
+  for (int i = 0; i < 100; ++i) {
     stringstream ss;
     string s;
     ss << i;

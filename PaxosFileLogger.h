@@ -18,11 +18,13 @@ public:
     const std::string prefix,
     PosixOpsIf* posix = NULL);
   void log(const PaxosTransaction&);
-  void getLatestTransaction(PaxosTransaction&);
+  bool getLatestTransaction(PaxosTransaction&);
   void commitLatestTransaction();
 
-  void setMaxLogFileSize(uint64_t);
+  void setMaxLogFileSize(uint32_t);
   ~PaxosFileLogger();
+
+  static const uint64_t RECORD_MARKER = 0xcafebabe;
 
 private:
   static const uint64_t MAX_FILE_SIZE = 1024 * 1024 * 1024; // 1G
@@ -38,7 +40,7 @@ private:
   unsigned long       currentSuffix_;
   int                 currentFd_;
   std::string         currentFile_;
-  uint64_t            maxSize_;
+  uint32_t            maxSize_;
   
   // XXX: This is dirty, but will have to do for now.
   // It's the only way I can think of to mock out the posix 

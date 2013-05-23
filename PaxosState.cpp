@@ -9,18 +9,18 @@ PaxosState::PaxosState(PaxosStateLogger& logger) : logger_(logger) {
 
   PaxosTransaction txn;
   
-  try {
-    logger_.getLatestTransaction(txn);
-  
-    highestProposalSeen_ = txn.proposal;
-    if (!txn.committed) {
-      pendingTxn_ = txn;
-      txnInProgress_ = true;
-    }
-  } catch (PaxosStateLoggerException& e) {
-    if (e.errcode() != PaxosStateLoggerException::LOG_NOT_FOUND) {
-      cerr << e.what() << endl;
-      throw;
+  if (logger_.getLatestTransaction(txn)) {
+    try {
+      highestProposalSeen_ = txn.proposal;
+      if (!txn.committed) {
+        pendingTxn_ = txn;
+        txnInProgress_ = true;
+      }
+    } catch (PaxosStateLoggerException& e) {
+      if (e.errcode() != PaxosStateLoggerException::LOG_NOT_FOUND) {
+        cerr << e.what() << endl;
+        throw;
+      }
     }
   }
 }
