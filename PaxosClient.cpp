@@ -129,20 +129,20 @@ bool PaxosClient::submit(std::string& val) {
     }
       
     bool status = sendAccept(highestPendingTxn);
-    
+  
+    if (status) {
+      sendLearn(highestPendingTxn.value);
+    }
+
     if (isReplaying) {
-      isReplaying = false;
       // We recovered a previous transaction, so success stays false; Do over
+      isReplaying = false;
     } else {
       if (status && highestPendingTxn.proposal == p_args.proposal) {
         // We successfully agreed upon our value
         success = true;
       }
     }
-  }
-
-  if (success) {
-    sendLearn(val);
   }
 
   return success;

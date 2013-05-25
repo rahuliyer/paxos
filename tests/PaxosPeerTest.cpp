@@ -64,6 +64,15 @@ class SimpleSuccessFixture : public BasicFixture {
     EXPECT_CALL(peer3, sendAccept(_, _))
       .Times(1)
       .WillOnce(SetArgReferee<1>(aRes));
+
+    EXPECT_CALL(peer1, sendLearn(_))
+      .Times(1);
+
+    EXPECT_CALL(peer2, sendLearn(_))
+      .Times(1);
+
+    EXPECT_CALL(peer3, sendLearn(_))
+      .Times(1);
   }
 };
 
@@ -92,6 +101,15 @@ class ProposeFailureFixture : public BasicFixture {
       .Times(0);
 
     EXPECT_CALL(peer3, sendAccept(_, _))
+      .Times(0);
+
+    EXPECT_CALL(peer1, sendLearn(_))
+      .Times(0);
+
+    EXPECT_CALL(peer2, sendLearn(_))
+      .Times(0);
+
+    EXPECT_CALL(peer3, sendLearn(_))
       .Times(0);
   }
 };
@@ -128,6 +146,15 @@ class AcceptFailureFixture : public BasicFixture {
     EXPECT_CALL(peer3, sendAccept(_, _))
       .Times(MAX_TRIES)
       .WillRepeatedly(SetArgReferee<1>(aRes));
+
+    EXPECT_CALL(peer1, sendLearn(_))
+      .Times(0);
+
+    EXPECT_CALL(peer2, sendLearn(_))
+      .Times(0);
+
+    EXPECT_CALL(peer3, sendLearn(_))
+      .Times(0);
   }
 };
 
@@ -158,6 +185,15 @@ class PartialProposeFailureFixture : public BasicFixture {
       .Times(0);
 
     EXPECT_CALL(peer3, sendAccept(_, _))
+      .Times(0);
+
+    EXPECT_CALL(peer1, sendLearn(_))
+      .Times(0);
+
+    EXPECT_CALL(peer2, sendLearn(_))
+      .Times(0);
+
+    EXPECT_CALL(peer3, sendLearn(_))
       .Times(0);
   }
 };
@@ -193,10 +229,74 @@ class HigherVersionFailureFixture : public BasicFixture {
 
     EXPECT_CALL(peer3, sendAccept(_, _))
       .Times(0);
+
+    EXPECT_CALL(peer1, sendLearn(_))
+      .Times(0);
+
+    EXPECT_CALL(peer2, sendLearn(_))
+      .Times(0);
+
+    EXPECT_CALL(peer3, sendLearn(_))
+      .Times(0);
   }
 };
 
 class PendingTransactionFixture : public BasicFixture {
+  virtual void SetUpExpectations() {
+    PaxosProposeResult pFailRes;
+    PaxosProposeResult pSuccessRes;
+
+    PaxosTransaction txn;
+    txn.proposal = 1;
+    txn.value = "haha0";
+
+    pFailRes.status = PaxosProposeStatus::HAS_UNFINISHED_TRANSACTION;
+    pFailRes.pendingTxn = txn;
+
+    pSuccessRes.status = PaxosProposeStatus::PROMISE;
+
+    EXPECT_CALL(peer1, sendPropose(_, _))
+      .Times(2)
+      .WillOnce(SetArgReferee<1>(pFailRes))
+      .WillOnce(SetArgReferee<1>(pSuccessRes));
+
+    EXPECT_CALL(peer2, sendPropose(_, _))
+      .Times(2)
+      .WillOnce(SetArgReferee<1>(pFailRes))
+      .WillOnce(SetArgReferee<1>(pSuccessRes));
+
+    EXPECT_CALL(peer3, sendPropose(_, _))
+      .Times(2)
+      .WillOnce(SetArgReferee<1>(pFailRes))
+      .WillOnce(SetArgReferee<1>(pSuccessRes));
+
+    PaxosAcceptResult aSuccessRes;
+    aSuccessRes.status = PaxosAcceptStatus::ACCEPTED;
+
+    EXPECT_CALL(peer1, sendAccept(_, _))
+      .Times(2)
+      .WillRepeatedly(SetArgReferee<1>(aSuccessRes));
+
+    EXPECT_CALL(peer2, sendAccept(_, _))
+      .Times(2)
+      .WillRepeatedly(SetArgReferee<1>(aSuccessRes));
+
+    EXPECT_CALL(peer3, sendAccept(_, _))
+      .Times(2)
+      .WillRepeatedly(SetArgReferee<1>(aSuccessRes));
+
+    EXPECT_CALL(peer1, sendLearn(_))
+      .Times(2);
+
+    EXPECT_CALL(peer2, sendLearn(_))
+      .Times(2);
+
+    EXPECT_CALL(peer3, sendLearn(_))
+      .Times(2);
+  }
+};
+
+class PendingTransactionFailureFixture : public BasicFixture {
   virtual void SetUpExpectations() {
     PaxosProposeResult pFailRes;
     PaxosProposeResult pSuccessRes;
@@ -242,6 +342,15 @@ class PendingTransactionFixture : public BasicFixture {
     EXPECT_CALL(peer3, sendAccept(_, _))
       .Times(2)
       .WillRepeatedly(SetArgReferee<1>(aSuccessRes));
+
+    EXPECT_CALL(peer1, sendLearn(StrEq("haha")))
+      .Times(1);
+
+    EXPECT_CALL(peer2, sendLearn(StrEq("haha")))
+      .Times(1);
+
+    EXPECT_CALL(peer3, sendLearn(StrEq("haha")))
+      .Times(1);
   }
 };
 
@@ -286,6 +395,13 @@ TEST_F(HigherVersionFailureFixture, BasicTest) {
 
 TEST_F(PendingTransactionFixture, BasicTest) {
   string testString = "haha1";
+
+  PaxosClient brain(peers);
+  EXPECT_TRUE(brain.submit(testString));
+}
+
+TEST_F(PendingTransactionFailureFixture, BasicTest) {
+  string testString = "haha";
 
   PaxosClient brain(peers);
   EXPECT_TRUE(brain.submit(testString));

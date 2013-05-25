@@ -38,6 +38,11 @@ PaxosFileLogReader: PaxosFileLogReader.o
 libpaxos.a: $(OBJS)
 	$(AR) rcs libpaxos.a $(OBJS)
 
+.PHONY: runtests
+runtests: libpaxos.a
+	make -C ./tests clean
+	make -C ./tests runtests
+
 .PHONY: thrift
 thrift:
 	$(THRIFT) --gen cpp -o $(THRIFTDIR) $(THRIFTDIR)/Paxos.thrift
